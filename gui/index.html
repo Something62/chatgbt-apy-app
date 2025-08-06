@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Chat App</title>
+    <script type="text/javascript" src="/eel.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2>Chat with Personal AI Assistant</h2>
+    
+    <div id="chat"></div>
+
+    <!-- Input box and buttons -->
+    <div id="input-container">
+        <input type="text" id="prompt" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+
+        <!-- Upload PDF Button -->
+        <input type="file" id="pdfInput" accept=".pdf" style="display: none;" onchange="uploadFile(event)">
+        <button onclick="document.getElementById('pdfInput').click();">Load Document</button>
+    </div>
+
+    <span class="loader" style="display: none;"></span>
+
+    <script>
+        document.getElementById("prompt").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            let input = document.getElementById("prompt");
+            let message = input.value.trim();
+            if (!message) return;
+
+            let chatDiv = document.getElementById("chat");
+            chatDiv.innerHTML += `<div class="message user"><strong style="color: blue;">You:</strong> ${message}</div>`;
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+
+            input.value = "";
+
+            // Show the loader when sending the request
+            document.querySelector(".loader").style.display = "inline-block";
+
+            // Send to Python for text input
+            let reply = await eel.chat_with_assistant(message)();
+
+            // Hide the loader after receiving the response
+            document.querySelector(".loader").style.display = "none";
+
+            chatDiv.innerHTML += `<div class="message assistant"><strong style="color: red;">Assistant:</strong> ${reply}</div>`;
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
+
+        // Handle file upload (image or PDF)
+        function uploadFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const fileType = file.type;
+            let chatDiv = document.getElementById("chat");
+
+            // Show the loader when uploading
+            document.querySelector(".loader").style.display = "inline-block";
+
+            if (fileType.startsWith("image/")) {
+                // Process the image
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const imageUrl = event.target.result;
+
+                    // Add user message with image to chat
+                    chatDiv.innerHTML += `<div class="message user"><strong style="color: blue;">You:</strong> <img src="${imageUrl}" alt="Uploaded Image" width="200"></div>`;
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
+
+                    // Send the image to Python for analysis (Base64 encoded)
+                    let imageAnalysis = await eel.analyze_image(imageUrl)();
+
+                    // Hide the loader after receiving the analysis
+                    document.querySelector(".loader").style.display = "none";
+
+                    chatDiv.innerHTML += `<div class="message assistant"><strong style="color: red;">Assistant:</strong> ${imageAnalysis}</div>`;
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
+                };
+                reader.readAsDataURL(file);
+            } else if (fileType === "application/pdf") {
+                // Process the PDF
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const pdfData = event.target.result;
+
+                    // Add user message with PDF to chat
+                    chatDiv.innerHTML += `<div class="message user"><strong style="color: blue;">You:</strong> Uploaded PDF</div>`;
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
+
+                    // Send the PDF to Python for analysis
+                    let pdfAnalysis = await eel.analyze_pdf(pdfData)();
+
+                    // Hide the loader after receiving the analysis
+                    document.querySelector(".loader").style.display = "none";
+
+                    chatDiv.innerHTML += `<div class="message assistant"><strong style="color: red;">Assistant:</strong> ${pdfAnalysis}</div>`;
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert("Please upload a valid image or PDF file.");
+                document.querySelector(".loader").style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

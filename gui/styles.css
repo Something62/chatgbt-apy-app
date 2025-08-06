@@ -1,0 +1,101 @@
+body {
+/*  background-image: url('');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center; */
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.959);
+    font-family: Arial;
+    padding: 20px;
+    color: aliceblue;
+}
+
+
+#chat {
+    background-color: rgba(255, 255, 255, 0.025); 
+    border: 2px solid #00ffb3;
+    padding: 10px;
+    height: 800px;
+    overflow-y: auto;
+    border-radius: 5px;
+    white-space: pre-line;
+}
+
+#prompt {
+    background-color: #353434;
+    color: #ffffff;
+    border: 2px solid #00ffb3;
+    padding: 10px;
+    font-size: 16px;
+    width: 80%;
+    outline: none; /* Remove blue default border */
+    border-radius: 5px;
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth effect */
+    white-space: nowrap;  /* Prevent wrapping of long text */
+    overflow-x: auto;
+}
+
+#prompt:focus {
+    border-color: #4CAF50; /* Green border on focus */
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Optional glow */
+}
+
+button {
+    background-color: #4CAF50; /* Green background */
+    color: white;              /* White text */
+    border: none;              /* Remove default border */
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;        /* Rounded corners */
+    transition: background-color 0.3s;
+}
+
+button:focus {
+    background-color: #1e7122;
+}
+
+button:active {
+    background-color: #7a0000; /* Darker blue on click */
+}
+
+#prompt::placeholder {
+    color: #ffffff;
+}
+
+.message { margin-bottom: 10px; }
+
+.user { color: lightblue; }
+
+.assistant { color: lightcoral; }
+
+/*Loading Animation*/
+.loader {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    width: 48px;
+    height: 48px;
+    background: #9fffe1;
+    animation: rotate 1s linear infinite;
+    z-index: 1000;
+}
+  
+@keyframes rotate {
+    0% {
+      transform: rotate(0deg) scale(0.2);
+      border-radius: 10%;
+    }
+    50% {
+      transform: rotate(180deg) scale(1.5);
+      border-radius: 50%;
+    }
+    100% {
+      transform: rotate(360deg) scale(0.2);
+      border-radius: 10%;
+    }
+}
+    
