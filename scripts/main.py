@@ -24,7 +24,7 @@ def save_key():
         f.write("OPENAI_API_KEY=" + envcontent)
 
     root.destroy()
-    run_app()  # Continue app logic after window closes
+    run_app() 
 
 def run_app():
     global start, client, chat_history
@@ -122,5 +122,6 @@ if start:
 
     height = window.winfo_screenheight()
     width = window.winfo_screenwidth()
+
 
     eel.start('index.html', size=(width, height))
