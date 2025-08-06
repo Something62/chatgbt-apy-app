@@ -89,7 +89,6 @@ def load_pdf(file_path):
 
 @eel.expose
 def analyze_pdf(file_path):
-    """ Analyze the content of the loaded PDF """
     text = load_pdf(file_path)
     if text:
         response = client.chat.completions.create(
@@ -103,7 +102,6 @@ def analyze_pdf(file_path):
 
 @eel.expose
 def chat_with_assistant(prompt):
-    """ Send a text prompt to the assistant for response """
     chat_history.append({"role": "user", "content": prompt})
     try:
         response = client.chat.completions.create(
@@ -125,3 +123,4 @@ if start:
 
 
     eel.start('index.html', size=(width, height))
+
