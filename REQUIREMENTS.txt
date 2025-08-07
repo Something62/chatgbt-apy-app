@@ -1,0 +1,5 @@
+eel
+openai
+requests
+python-dotenv
+pypdf
