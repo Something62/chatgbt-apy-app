@@ -1,8 +1,4 @@
 body {
-/*  background-image: url('');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center; */
     height: 100%;
     margin: 0;
     padding: 0;
@@ -31,26 +27,26 @@ body {
     padding: 10px;
     font-size: 16px;
     width: 80%;
-    outline: none; /* Remove blue default border */
+    outline: none; 
     border-radius: 5px;
-    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth effect */
-    white-space: nowrap;  /* Prevent wrapping of long text */
+    transition: border-color 0.3s, box-shadow 0.3s; 
+    white-space: nowrap;  
     overflow-x: auto;
 }
 
 #prompt:focus {
-    border-color: #4CAF50; /* Green border on focus */
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Optional glow */
+    border-color: #4CAF50; 
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); 
 }
 
 button {
-    background-color: #4CAF50; /* Green background */
-    color: white;              /* White text */
-    border: none;              /* Remove default border */
+    background-color: #4CAF50; 
+    color: white;              
+    border: none;              
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;        /* Rounded corners */
+    border-radius: 5px;        
     transition: background-color 0.3s;
 }
 
@@ -59,7 +55,7 @@ button:focus {
 }
 
 button:active {
-    background-color: #7a0000; /* Darker blue on click */
+    background-color: #7a0000; 
 }
 
 #prompt::placeholder {

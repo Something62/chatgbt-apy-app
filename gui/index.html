@@ -16,8 +16,12 @@
         <input type="text" id="prompt" placeholder="Type your message...">
         <button onclick="sendMessage()">Send</button>
 
-        <input type="file" id="pdfInput" accept=".pdf" style="display: none;" onchange="uploadFile(event)">
-        <button onclick="document.getElementById('pdfInput').click();">Load Document</button>
+    <input type="file" id="pdfInput" accept=".pdf" style="display: none;" onchange="uploadFile(event)">
+    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="uploadFile(event)">
+
+    <button onclick="document.getElementById('pdfInput').click();">Load Document</button>
+    <button onclick="document.getElementById('imageInput').click();">Load Photo</button>
+
     </div>
 
     <span class="loader" style="display: none;"></span>
@@ -64,18 +68,25 @@
                 reader.onload = async function(event) {
                     const imageUrl = event.target.result;
 
-                    chatDiv.innerHTML += `<div class="message user"><strong style="color: blue;">You:</strong> <img src="${imageUrl}" alt="Uploaded Image" width="200"></div>`;
+                    let promptText = document.getElementById("prompt").value.trim() || "What is in this image?";
+
+                    chatDiv.innerHTML += `<div class="message user"><strong style="color: blue;">You:</strong> ${promptText}<br><img src="${imageUrl}" alt="Uploaded Image" width="200"></div>`;
                     chatDiv.scrollTop = chatDiv.scrollHeight;
 
-                    let imageAnalysis = await eel.analyze_image(imageUrl)();
+                    document.getElementById("prompt").value = "";
+                    document.querySelector(".loader").style.display = "inline-block";
+
+                    let imageAnalysis = await eel.analyze_image_with_prompt(imageUrl, promptText)();
 
                     document.querySelector(".loader").style.display = "none";
-
                     chatDiv.innerHTML += `<div class="message assistant"><strong style="color: red;">Assistant:</strong> ${imageAnalysis}</div>`;
                     chatDiv.scrollTop = chatDiv.scrollHeight;
                 };
                 reader.readAsDataURL(file);
+            
+
             } else if (fileType === "application/pdf") {
+
                 const reader = new FileReader();
                 reader.onload = async function(event) {
                     const pdfData = event.target.result;
