@@ -1,4 +1,3 @@
-Image recognition still in development.
 Easy Installation Guide:
 
 1. Make sure you have Python 3 and pip installed.
