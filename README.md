@@ -1,3 +1,7 @@
+This is a lightweight Python application that lets you chat with OpenAI’s ChatGPT through a simple and clean HTML interface. 
+The goal of this project is to make interacting with ChatGPT as easy and affordable as possible. 
+Instead of building a full app from scratch or paying for services like ChatGPT you only pay for your API usage nothing more.
+
 Easy Installation Guide:
 
 1. Make sure you have Python 3 and pip installed.
