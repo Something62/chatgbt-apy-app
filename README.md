@@ -15,5 +15,3 @@ Easy Installation Guide:
 5. Run the app in the scripts folder with this command: python main.py
 
 6. Enter your api key in the tkinter text box then click save.
-
-7. Important: Verify your OpenAI organization to unlock full access to models like image generation. Go to your OpenAI Organization Settings; Click Verify Organization and complete the verification steps (providing your company info, tax ID, etc.);After verification, wait up to 15 minutes for access to propagate before using restricted models.
