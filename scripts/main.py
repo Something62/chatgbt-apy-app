@@ -83,75 +83,37 @@ if not os.path.exists(os.path.join(base_dir, 'config', '.env')):
 else:
     run_app()
 
-@eel.expose
-def analyze_image_with_prompt(base64_image, prompt_text):
+
+
+
+def load_pdf(base64_pdf_data):
     try:
-        if "," in base64_image:
-            header, encoded = base64_image.split(",", 1)
+        if "," in base64_pdf_data:
+            header, encoded = base64_pdf_data.split(",", 1)
         else:
-            return "Invalid image format."
-
-        image_url_object = {
-            "type": "image_url",
-            "image_url": {
-                "url": base64_image,
-            }
-        }
-
-        if not prompt_text.strip():
-            prompt_text = "What do you see in this image?"
-
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "user", "content": [
-                    {"type": "text", "text": prompt_text},
-                    image_url_object
-                ]}
-            ]
-        )
-
-        return response.choices[0].message.content
-
-    except Exception as e:
-        return f"Error analyzing image: {e}"
-
-
-def load_pdf(file_path):
-    """ Load and extract text from PDF """
-    try:
-        with open(file_path, "rb") as file:
-            reader = PyPDF2.PdfReader(file)
-            text = ""
-            for page in reader.pages:
-                text += page.extract_text()
-            return text
+            encoded = base64_pdf_data
+        pdf_bytes = base64.b64decode(encoded)
+        pdf_stream = io.BytesIO(pdf_bytes)
+        reader = PyPDF2.PdfReader(pdf_stream)
+        text = ""
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
+        return text if text else "No text found in PDF."
     except Exception as e:
         return f"Error loading PDF: {e}"
 
-@eel.expose
-def analyze_pdf(file_path):
-    """ Analyze the content of the loaded PDF """
-    text = load_pdf(file_path)
-    if text:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": f"Analyze the following text from a PDF:\n{text}"}]
-        )
-        analysis = response.choices[0].message.content
-        return analysis
-    else:
-        return "No text extracted from the PDF or an error occurred."
 
 @eel.expose
-def chat_with_assistant(prompt):
-    """ Send a text prompt to the assistant for response """
+def chat_with_assistant(prompt, model):
     chat_history.append({"role": "user", "content": prompt})
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=model,
             messages=chat_history
         )
+
         reply = response.choices[0].message.content
         chat_history.append({"role": "assistant", "content": reply})
         return reply
@@ -159,34 +121,48 @@ def chat_with_assistant(prompt):
         return f"An error occurred: {e}"
 
 @eel.expose
-def analyze_image(base64_image):
+def analyze_image_with_prompt(base64_image, prompt_text, model):
     try:
         if "," in base64_image:
             header, encoded = base64_image.split(",", 1)
         else:
             return "Invalid image format."
 
+        if not prompt_text.strip():
+            prompt_text = "What do you see in this image?"
+
         image_url_object = {
             "type": "image_url",
-            "image_url": {
-                "url": base64_image,
-            }
+            "image_url": {"url": base64_image}
         }
 
         response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "user", "content": [
-                    {"type": "text", "text": "What is in this image?"},
-                    image_url_object
-                ]}
-            ]
+            model=model,
+            messages=[{"role": "user", "content": [
+                {"type": "text", "text": prompt_text},
+                image_url_object
+            ]}]
         )
-
         return response.choices[0].message.content
 
     except Exception as e:
         return f"Error analyzing image: {e}"
+
+@eel.expose
+def analyze_pdf(file_path, model):
+    text = load_pdf(file_path)
+    if text:
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": f"Analyze the following text from a PDF:\n{text}"}]
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            return f"Error analyzing PDF: {e}"
+    else:
+        return "No text extracted from the PDF or an error occurred."
+
 
 
 if start:
