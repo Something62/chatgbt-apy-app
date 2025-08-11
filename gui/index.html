@@ -22,6 +22,15 @@
     <button onclick="document.getElementById('pdfInput').click();">Load Document</button>
     <button onclick="document.getElementById('imageInput').click();">Load Photo</button>
 
+
+    <select id="modelSelect" name="gbt-model">
+        <option value="gpt-5-2025-08-07">gpt-5-2025-08-07</option>
+        <option value="gpt-5-nano-2025-08-07">gpt-5-nano-2025-08-07</option>
+        <option value="gpt-5-mini">gpt-5-mini</option>
+        <option value="gpt-4o-mini">gpt-4o-mini</option>
+    </select>
+
+
     </div>
 
     <span class="loader" style="display: none;"></span>
@@ -46,20 +55,23 @@
 
             document.querySelector(".loader").style.display = "inline-block";
 
-            let reply = await eel.chat_with_assistant(message)();
+            let selectedModel = document.getElementById("modelSelect").value;
+
+            let reply = await eel.chat_with_assistant(message, selectedModel)();
 
             document.querySelector(".loader").style.display = "none";
 
             chatDiv.innerHTML += `<div class="message assistant"><strong style="color: red;">Assistant:</strong> ${reply}</div>`;
             chatDiv.scrollTop = chatDiv.scrollHeight;
         }
-
+        
         function uploadFile(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const fileType = file.type;
             let chatDiv = document.getElementById("chat");
+            let selectedModel = document.getElementById("modelSelect").value;
 
             document.querySelector(".loader").style.display = "inline-block";
 
@@ -67,41 +79,38 @@
                 const reader = new FileReader();
                 reader.onload = async function(event) {
                     const imageUrl = event.target.result;
-
                     let promptText = document.getElementById("prompt").value.trim() || "What is in this image?";
 
                     chatDiv.innerHTML += `<div class="message user"><strong style="color: blue;">You:</strong> ${promptText}<br><img src="${imageUrl}" alt="Uploaded Image" width="200"></div>`;
                     chatDiv.scrollTop = chatDiv.scrollHeight;
 
                     document.getElementById("prompt").value = "";
-                    document.querySelector(".loader").style.display = "inline-block";
 
-                    let imageAnalysis = await eel.analyze_image_with_prompt(imageUrl, promptText)();
+                    let imageAnalysis = await eel.analyze_image_with_prompt(imageUrl, promptText, selectedModel)();
 
                     document.querySelector(".loader").style.display = "none";
                     chatDiv.innerHTML += `<div class="message assistant"><strong style="color: red;">Assistant:</strong> ${imageAnalysis}</div>`;
                     chatDiv.scrollTop = chatDiv.scrollHeight;
                 };
                 reader.readAsDataURL(file);
-            
+
 
             } else if (fileType === "application/pdf") {
-
                 const reader = new FileReader();
                 reader.onload = async function(event) {
-                    const pdfData = event.target.result;
+                    const pdfBase64 = event.target.result;
 
                     chatDiv.innerHTML += `<div class="message user"><strong style="color: blue;">You:</strong> Uploaded PDF</div>`;
                     chatDiv.scrollTop = chatDiv.scrollHeight;
 
-                    let pdfAnalysis = await eel.analyze_pdf(pdfData)();
+                    let pdfAnalysis = await eel.analyze_pdf(pdfBase64, selectedModel)();
 
                     document.querySelector(".loader").style.display = "none";
-
                     chatDiv.innerHTML += `<div class="message assistant"><strong style="color: red;">Assistant:</strong> ${pdfAnalysis}</div>`;
                     chatDiv.scrollTop = chatDiv.scrollHeight;
                 };
-                reader.readAsArrayBuffer(file);
+                reader.readAsDataURL(file);
+
             } else {
                 alert("Please upload a valid image or PDF file.");
                 document.querySelector(".loader").style.display = "none";
